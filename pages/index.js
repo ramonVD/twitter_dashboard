@@ -15,7 +15,7 @@ export default function Home() {
 
       <main className="flex w-full h-full items-center justify-center">
         <div className="grid grid-cols-2 sm:gap-5 gap-2">
-          {redirectDiv("Search query", "/query")}
+          {redirectDiv("Search query", "/searchTweets")}
           {redirectDiv("Saved tweets", "/savedTweets")}
         </div>
       </main>
