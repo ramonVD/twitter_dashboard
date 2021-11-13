@@ -4,7 +4,7 @@ import Image from 'next/image'
 /*Footer for the webpages. So far two types, footer on the homepage
 with a fake logo (so far), and a "go back" footer for the rest
 of the pages that sends you to the homepage on clickin*/ 
-export default function footer(home=true, goBackLink="/") {
+export default function footer(home=true, gobackName="↲ Go back", goBackLink="/") {
     if (home) { 
         return (
             <footer className="flex flex-row w-full h-16 items-center">
@@ -27,7 +27,7 @@ export default function footer(home=true, goBackLink="/") {
             <footer className="flex flex-row w-full h-full items-end my-3">
                 <div className="mx-auto">
                     <Link href={goBackLink}>
-                        <a className="text-2xl standardLink">↲ Go back</a>
+                        <a className="text-2xl standardLink">{gobackName}</a>
                     </Link>
                 </div>
             </footer>

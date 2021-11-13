@@ -41,7 +41,7 @@ export default function TweetDisplay() {
     return (
         <div>
             {bigTweet(tweet_payload)}
-            {footer(false, "/searchTweets")}
+            {footer(false, "↲ Back to tweet list", "/searchTweets")}
         </div>
     )
 }

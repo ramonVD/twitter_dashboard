@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
     //Access the api via /api/twitterQuery?q=blahblah, q will be the text we search for
     const { q } = req.query;
-    if (q == "") { res.status(500).json( {error: "No text to search for specified"}); } 
+    if (q == "") { res.status(400).json( {error: "No text to search for specified"}); }
 
     try {
         const max_results = 10; //min is 10 tweets, change this in the future to be custom

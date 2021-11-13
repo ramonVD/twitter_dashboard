@@ -7,8 +7,6 @@ import { smallTweet } from "../../components/shared/tweetDisplay"
 import {findTweetUserData} from "../../components/utils/tweetHandling"
 import dummyTweets from "../../public/dummyData/tweets"
 
-const debug = true;
-
 /*TO-DO: 
 NEED TO ADD AN OPTIONS OBJECT TO EXECUTESEARCH 
 WITH STUFF LIKE GET RETWEETS, USER IDs...etc (other metrics that can be used or not)
@@ -27,6 +25,8 @@ DATA NEEDS TO BE CATEGORIZED
 
 NEED TO IMPLEMENT USER AUTH (THINK ABOUT DB TYPE OR AUTH w/e, WHAT SHOULD GO IN THERE ETC)
 
+REMOVE TOGGLE TO ALLOW FOR TEST DATA USAGE WHEN EVERYTHING'S FINISHED. MAYBE
+MAKE IT ONLY SHOW UP IN DEV MODE, NEED TO CHECK DOCS
 */
 
 
@@ -55,6 +55,7 @@ export default function queryPage() {
 	const [searchText, setSearchText] = useState("");
 	const [isLoading, setLoading] = useState(false);
 	const [errorMsg, setErrorMsg] = useState("");
+	const [debugMode, setDebugMode] = useState(true);
 
 	//MAYBE ADD A RED OUTLINE TO THE INPUT ELEMENT ON ERROR
 	return (
@@ -74,12 +75,25 @@ export default function queryPage() {
 
 				<section className="flex flex-wrap w-full h-full justify-center items-center">
 						<div className="text-center">
-							<p className="w-full mb-5">{errorMsg}</p>
-							<input className="bg-coolGray-200 h-10 mr-2 appearance-none border-2 border-white-500 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-900"
+							<p className="w-full mb-3">{errorMsg}</p>
+							<input className="bg-coolGray-200 w-8/12 h-10 appearance-none border-2 border-white-500 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-900"
 							type="text" value={searchText} onChange={e => setSearchText(e.target.value)}>
 							</input>
-							<button className="bg-gray-500 h-10 hover:bg-gray-700 text-white font-bold py-2 px-4 border border-gray-500 rounded"
-							onClick={() => executeSearch(searchText, setErrorMsg, setLoading, setTweetResults)}>{"Search"}</button>
+							<button className="bg-gray-500 h-10 ml-1 hover:bg-gray-700 text-white font-bold py-2 px-4 border border-gray-500 rounded"
+							onClick={() => executeSearch(searchText, setErrorMsg, setLoading, setTweetResults, debugMode)}>{"Search"}</button>
+						</div>
+						<div className="flex items-center justify-center w-full mb-12">
+							<label htmlFor="toggleB" className="flex items-center cursor-pointer">
+								<div className="relative my-2">
+								<input type="checkbox" id="toggleB" className="sr-only" checked={!debugMode}
+								onChange={() => {setDebugMode(!debugMode);}}/>
+								<div className="block bg-blue-200 w-14 h-8 rounded-full"></div>
+								<div className="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+								</div>
+								<div className="ml-3 text-gray-700 font-medium">
+								{"(DEV) Fetch external data"}
+								</div>
+							</label>
 						</div>
 				</section>
 				{footer(false)}
@@ -114,7 +128,7 @@ function wrapTweetsHTML(tweetsData) {
 	return tweetsHTML;
 }
 
-async function executeSearch(searched_text, updateErrors, updateLoading, updateResults) {
+async function executeSearch(searched_text, updateErrors, updateLoading, updateResults, debugMode=false) {
 
 	if (searched_text == "") { 
 		updateErrors("Search bar is empty. Input a name or a phrase to search");
@@ -124,7 +138,7 @@ async function executeSearch(searched_text, updateErrors, updateLoading, updateR
 	updateLoading(true);
 	updateErrors("");
 
-	if (debug) {
+	if (debugMode) {
 		const testResults = dummyTweets[parseInt(Math.random()*dummyTweets.length)];
 		setTimeout(() => {
 			updateResults(testResults);
@@ -151,7 +165,7 @@ async function executeSearch(searched_text, updateErrors, updateLoading, updateR
 					updateLoading(false); 
 					return;
 				} //Maybe add custom errors via checking the error key in the data
-				console.log("THE DATA: ", JSON.stringify(data,undefined,2));
+				console.log("THE DATA: ", JSON.stringify(data));
 				updateResults(data);
 				updateLoading(false);
 			})

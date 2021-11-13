@@ -27,3 +27,10 @@ a {
 .standardLink:hover{
 	color:#2563EB;
 }
+
+/*Toggle for debug mode - taken from https://codepen.io/lhermann/pen/EBGZRZ
+Remove when dev is over, or maybe reuse it in other places*/
+input:checked ~ .dot {
+  transform: translateX(100%);
+  background-color: #48bb78;
+}
