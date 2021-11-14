@@ -1,94 +1,28 @@
-/*NOTE: THIS SHOULD BE A COMPONENT LEVEL CSS PAGE OF tweetDisplay (so it should be
-named tweetDisplay.module.css and go in the shared components folder,
-however that's a lotta work b/c I have to append the imported styles name to every
-class in that module, plus I dunno how - play with importing classes in react (hopefully
-there's no problem, still it's a lot of work. For now, _app loads the styles*/
-
-/*APPROXIMATION TO THE LAYOUT OF A TWEET, taken from https://codepen.io/moshfequr9/pen/wXQbPR*/
-.tweet-wrap body {
-    background: #e6ecf0;
-    font-family: 'Asap', sans-serif;
-    font-family: 'Roboto', sans-serif;
-  
+  /*"REAL TWEET FALLBACK CSS
+  FROM: https://developer.twitter.com/en/docs/twitter-for-websites/embedded-tweets/guides/css-for-embedded-tweets */
+  blockquote.twitter-tweet {
+    overflow: hidden;
+    color: #1c2022;
+    background-color: #fff;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
+    width: 500px;
+    max-width: 100%;
+    min-width: 220px;
+    padding: 1.00rem 2.25rem 1.725rem 1.00rem;
+    float:left;
+    margin-top: 6rem;
   }
-  .tweet-wrap img {
-    max-width:100%;
+  blockquote.twitter-tweet:before {
+    content: none;
   }
-  .avator {
-    border-radius:100px;
-    width:48px;
-    margin-right: 15px;
+  blockquote.twitter-tweet p {
+    white-space: pre-wrap;
+    font: 16px/1.4 Helvetica, Roboto, 'Segoe UI', Calibri, sans-serif;
   }
-  
-  
-  .tweet-wrap {
-    max-width:650px;
-    background: #fff;
-    margin: 0 auto;
-    margin-top: 50px;
-    border-radius:3px;
-    padding: 30px;
-    border-bottom: 1px solid #e6ecf0;
-    border-top: 1px solid #e6ecf0;
+  blockquote.twitter-tweet a {
+    color: #2b7bb9;
   }
-  
-  .tweet-header {
-    display: flex;
-    align-items:flex-start;
-    font-size:14px;
-  }
-  .tweet-header-info {
-    font-weight:bold;
-  }
-  .tweet-header-info span {
-    color:#657786;
-    font-weight:normal;
-    margin-left: 5px;
-  }
-  .tweet-header-info p {
-    font-weight:normal;
-    margin-top: 5px;
-    
-  }
-  .tweet-img-wrap {
-    padding-left: 60px;
-  }
-  
-  .tweet-info-counts {
-    display: flex;
-    margin-left: 60px;
-    margin-top: 10px;
-  }
-  .tweet-info-counts div {
-    display: flex;
-    margin-right: 20px;
-  }
-  .tweet-info-counts div svg {
-    color:#657786;
-    margin-right: 10px;
-  }
-  @media screen and (max-width:430px){
-    .tweet-wrap body {
-      padding-left: 20px;
-      padding-right: 20px;
-    }
-    .tweet-header {
-      flex-direction:column;
-    }
-    .tweet-header img {
-      margin-bottom: 20px;
-    }
-    .tweet-header-info p {
-      margin-bottom: 30px;
-    }
-    .tweet-img-wrap {
-      padding-left: 0;
-    }
-    .tweet-info-counts {
-    display: flex;
-    margin-left: 0;
-  }
-  .tweet-info-counts div {
-    margin-right: 10px;
-  }
+  blockquote.twitter-tweet a:visited {
+    color: #2b7bb9;
   }
