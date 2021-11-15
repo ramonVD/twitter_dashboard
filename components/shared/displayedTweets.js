@@ -2,22 +2,22 @@ import { useEffect } from "react";
 import {cleanTweetDate} from "../../lib/tweetDataHandling"
 import footer from "../shared/footer"
 
-const containerClasses = "md:p-4 sm:p-2 p-1 sm:m-2 m-1 border rounded border-blue-200 hover:bg-blue-100 cursor-pointer relative"; //Here to reference easily
-const tweetTitleClasses = "md:text-xl text-lg font-bold md:w-full";
-const tweetTextClasses = "lg:text-xl md:text-lg sm:text-base text-sm md:mx-auto max-w-full min-w-0 overflow-ellipsis break-words mb-8";
+const containerClasses = "sm:p-3 p-2 m-1 border rounded border-blue-200 hover:bg-blue-100 cursor-pointer relative"; //Here to reference easily
+const tweetTitleClasses = "md:text-lg text-medium font-bold md:w-full";
+const tweetTextClasses = "lg:text-base sm:text-sm text-xs md:mx-auto max-w-full min-w-0 overflow-ellipsis break-words mb-8";
 
 /*Small tweet element, for when we're listing a lot of them*/
 export function smallTweet(tweetParams) {
     const dateObj = cleanTweetDate(tweetParams.created_at);
     return (
         <div className={containerClasses}>
-            <div className="md:mb-3 mb-1">
+            <div className="md:mb-3 mb-1 break-all">
             <h3 className={tweetTitleClasses}>{tweetParams.name || "???"} 
-                <span className="text-sm align-middle font-light align-top">{`⠀@${tweetParams.username}` || "@???"}</span>
+                <span className="text-xs align-middle font-light align-top">{`⠀@${tweetParams.username}` || "@???"}</span>
             </h3>
             </div>
             <div className={tweetTextClasses}>{tweetParams.text}</div>
-            <div className="sm:text-sm text-xs italic font-light absolute bottom-3 md:left-4 sm:left-2 left-1">
+            <div className="text-xs italic font-light absolute bottom-3 left-3">
                     {`${dateObj.month} ${dateObj.monthDay} - ${dateObj.hour}:${dateObj.min} ${dateObj.PMorAM}`}
             </div>
         </div>

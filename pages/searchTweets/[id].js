@@ -5,7 +5,6 @@ import {getTweetData, findTweetUserData} from "../../lib/tweetDataHandling"
 import TweetContext from '../../components/shared/tweetContext'
 import { tweetWidget } from '../../components/shared/displayedTweets'
 import tweetInfoCard from '../../components/shared/tweetInfoCard'
-import Script from "next/script"
 import Link from "next/link"
 
 /*Handles dynamic routing of found tweets, if the user clicks on a tweet
@@ -62,49 +61,30 @@ export default function TweetDisplay() {
         }
     }, [])
 
-    let showCardClasses = "flex flex-row flex-wrap lg:py-2 sm:p-3 p-1 justify-center transition-opacity col-span-2";
-    showCardClasses += (showingTweetInfo) ? " opacity-100" : " opacity-0"
+    let showCardClasses = "transition-all";
+    showCardClasses += (showingTweetInfo) ? " block" : " hidden"
     //LScript esta tret de twitter a
     //https://developer.twitter.com/en/docs/twitter-for-websites/javascript-api/guides/scripting-loading-and-initialization
     return (
-		<div className="flex h-screen flex-col w-screen p-1 pt-3"> 
-            <Script id="delete_me_onUnload">
-            {`
-            window.twttr = (function(d, s, id) {var js, fjs = d.getElementsByTagName(s)[0], t = window.twttr || {};
-            if (d.getElementById(id)) return t;
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "https://platform.twitter.com/widgets.js";
-            fjs.parentNode.insertBefore(js, fjs);
-
-            t._e = [];
-            t.ready = function(f) {
-                t._e.push(f);
-            };
-
-            return t;
-            }(document, "script", "twitter-wjs"));`}
-            </Script>
-            <div className="grid lg:grid-cols-5 place-content-center">
-                <div className="flex justify-center lg:py-2 sm:p-3 p-1 col-span-2"> 
+            <div className="grid md:grid-cols-4 place-content-stretch">
+                <div className="flex flex-initial justify-center items-stretch text-center py-2 md:col-span-2"> 
                     {tweetWidget(embeddedTweet)}
                 </div>
-                <div className="flex sm:flex-col flex-grow-0 justify-center lg:py-5 md:p-3 p-1 w-full">
-                    <button className="h-14 m-2 sm:text-lg text-xs px-4 bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded"
+                <div className="flex-col md:sticky flex flex-grow-0 md:self-start md:top-32 mx-auto content-stretch md:col-span-2">
+                    <button className="h-14 my-2 mx-1 xl:text-base lg:text-sm text-xs bg-green-500 hover:bg-green-400 text-white font-bold py-1 px-3 border-b-3 border-green-700 hover:border-green-500 rounded"
                         onClick={() => {setShowingTweetInfo(!showingTweetInfo);}}>
                     {!showingTweetInfo ? "Show more tweet info (WIP)" : "Hide Tweet info (WIP)"}
                     </button>
+                    <div className={showCardClasses}>
+                       {tweetInfoCard()}
+                    </div>
                     <Link href="/searchTweets">
-                        <button className="m-2 h-14 sm:text-lg text-sm bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded">
-                            {"↲ Back to search"}
+                        <button className="h-14 my-2 mx-1 xl:text-base lg:text-sm text-xs bg-red-500 hover:bg-red-400 text-white font-bold py-1 px-3 border-b-3 border-red-700 hover:border-red-500 rounded">
+                        {"↲ Back to search"}
                         </button>
                     </Link>
                 </div>
-                <div className={showCardClasses}>
-                   {tweetInfoCard()}
-                </div>
             </div>
-        </div>
     )
 }
 
@@ -137,8 +117,6 @@ async function getEmbeddedTweet(tweetID, author, setEmbeddedTweet) {
 /*Cleans all the garbage elements that are created by the twitter widget scripts.
 Some of them are twitter analytics iframes and stuff.*/
 function cleanGarbageTags() {
-    const oldScript = document.querySelector("#delete_me_onUnload");
-    if (oldScript !== undefined && oldScript !== null) { oldScript.remove(); }
     const twitterIframes = document.querySelectorAll("iframe");
     for (let iframe of twitterIframes) { iframe.remove(); }
     const intrusiveScript = document.querySelector("[src^='https://platform.twitter.com/js/']");

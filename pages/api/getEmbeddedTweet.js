@@ -10,10 +10,10 @@ export default async function handler(req, res) {
 
     try {
         
-        //By default, omits the script to populate the widget and sets it in the center
+        //By default, omits the script to populate the widget
         const url = [
         `https://publish.twitter.com/oembed?url=https%3A%2F%2F`,
-        `twitter.com%2F${author}%2Fstatus%2F${id}&omit_script=true&align=left`
+        `twitter.com%2F${author}%2Fstatus%2F${id}&omit_script=true&`
         ].join("");
 
         await fetch(url)

@@ -7,6 +7,7 @@ import { smallTweet } from "../../components/shared/displayedTweets"
 import {findTweetUserData} from "../../lib/tweetDataHandling"
 import dummyTweets from "../../public/dummyData/tweets"
 import { valueInSessionStorage } from "../../lib/sessionStorageHandling"
+import Script from "next/script"
 
 /*TO-DO: 
 NEED TO ADD AN OPTIONS OBJECT TO EXECUTESEARCH 
@@ -64,6 +65,23 @@ export default function queryPage() {
 	return (
 
 		<div className="flex h-screen flex-col w-screen">
+            <Script id="delete_me_onUnload">
+            {`
+            window.twttr = (function(d, s, id) {var js, fjs = d.getElementsByTagName(s)[0], t = window.twttr || {};
+            if (d.getElementById(id)) return t;
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "https://platform.twitter.com/widgets.js";
+            fjs.parentNode.insertBefore(js, fjs);
+
+            t._e = [];
+            t.ready = function(f) {
+                t._e.push(f);
+            };
+
+            return t;
+            }(document, "script", "twitter-wjs"));`}
+            </Script>
 			{loginBar()}
 
 			<main className="flex flex-col flex-1 w-full h-full justify-start items-start">

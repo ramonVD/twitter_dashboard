@@ -1,9 +1,11 @@
+import Image from "next/image"
+
 /*Card with extra info about a tweet. This uses a parody image, not implemented really yet.
 Need to improve the css*/
 export default function tweetInfoCard(params) {
     return (
         <div className="rounded overflow-hidden shadow-lg">
-        <img className="w-full" src="/img/Tweet.png" alt="Ayup" />
+        <Image className="" src="/img/Tweet.png" alt="Ayup" width={320} height={235} />
         <div className="px-6 py-4">
             <div className="font-bold text-xl mb-2">Twitter info binch</div>
             <p className="text-gray-700 text-base">
