@@ -1,11 +1,13 @@
 import loginBar from "../../components/shared/loginBar"
 import footer from "../../components/shared/footer"
 import Link from "next/link"
-import {useState, useEffect, useContext} from "react"
+import {useState, useEffect, useContext, useRef} from "react"
 import TweetContext from "../../components/shared/tweetContext"
-import { smallTweet } from "../../components/shared/tweetDisplay"
-import {findTweetUserData} from "../../components/utils/tweetHandling"
+import { smallTweet } from "../../components/shared/displayedTweets"
+import {findTweetUserData} from "../../lib/tweetDataHandling"
 import dummyTweets from "../../public/dummyData/tweets"
+import { valueInSessionStorage } from "../../lib/sessionStorageHandling"
+import Script from "next/script"
 
 /*TO-DO: 
 NEED TO ADD AN OPTIONS OBJECT TO EXECUTESEARCH 
@@ -31,19 +33,25 @@ MAKE IT ONLY SHOW UP IN DEV MODE, NEED TO CHECK DOCS
 
 
 export default function queryPage() {
+	/*NOTA: Aixo mho he trobat. Next (React en realitat) te problemes si el valor inicial del context de 
+	tweetResults es un objecte complex. Per la hidration k primer posa les dades dakest arxiu i despres les 
+	de _app on es el context, i com k son objectes i es pensa k son diferents sagobia mazo.
+	Passa el mateix si ho fas amb useeffects i tal, recordar que els useffects van primer el dakest
+	arxiu i despres el d'app. Requereix més testing, pero basicament eh un follong.*/
 
-	const {tweetResults, setTweetResults} = useContext(TweetContext);
+	const {tweetResults, setTweetResults, searchForTweetInitial} = useContext(TweetContext);
+
+	//Starting value of search text comes from TweetContext, so we can link the page with a search text in place
+	const [searchText, setSearchText] = useState(searchForTweetInitial);
+	const [isLoading, setLoading] = useState(false);
+	const [errorMsg, setErrorMsg] = useState("");
+	const [debugMode, setDebugMode] = useState(true);
 
 	//Save searched tweets on unmount, just to sessionStorage not localStorage (closing the browser removes them)
 	useEffect(() => {
-		let savedTweets = window.sessionStorage.getItem("savedTweets");
-		try {
-			savedTweets = JSON.parse(savedTweets);
-		} catch {
-			savedTweets = {};
-		}
+		const savedTweets = valueInSessionStorage("savedTweets") || {};
 
-		if (savedTweets !== null && Object.entries(savedTweets).length > 0 && Object.entries(tweetResults).length == 0) {
+		if (savedTweets !== undefined && Object.entries(savedTweets).length > 0 && Object.entries(tweetResults).length === 0) {
 			setTweetResults(savedTweets);
 		}
 
@@ -52,24 +60,38 @@ export default function queryPage() {
 		}
 	}, [tweetResults]);
 
-	const [searchText, setSearchText] = useState("");
-	const [isLoading, setLoading] = useState(false);
-	const [errorMsg, setErrorMsg] = useState("");
-	const [debugMode, setDebugMode] = useState(true);
 
 	//MAYBE ADD A RED OUTLINE TO THE INPUT ELEMENT ON ERROR
 	return (
+
 		<div className="flex h-screen flex-col w-screen">
+            <Script id="delete_me_onUnload">
+            {`
+            window.twttr = (function(d, s, id) {var js, fjs = d.getElementsByTagName(s)[0], t = window.twttr || {};
+            if (d.getElementById(id)) return t;
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "https://platform.twitter.com/widgets.js";
+            fjs.parentNode.insertBefore(js, fjs);
+
+            t._e = [];
+            t.ready = function(f) {
+                t._e.push(f);
+            };
+
+            return t;
+            }(document, "script", "twitter-wjs"));`}
+            </Script>
 			{loginBar()}
 
 			<main className="flex flex-col flex-1 w-full h-full justify-start items-start">
 				<section className="flex w-full justify-center items-center max-h-5/6">
-					<div id="tweetsGrid" className="md:px-5 px-1 grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-1 grid-flow-row content-start place-items-stretch">
-						{isLoading ? <div className="col-span-4 row-start-1 row-end-4 place-self-end p-4 my-52">
-										<div className="animate-spin rounded-full ml-5 h-24 w-24 border-b-2 border-blue-900"></div>
-									</div> 
-									:
-									wrapTweetsHTML(tweetResults)}
+					<div id="tweetsGrid" className="md:px-2 px-1 min-w-full grid 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 grid-flow-row content-start place-items-stretch">
+						{isLoading ? <div className="col-span-full p-2 my-52 mx-auto">
+										<div className="animate-spin rounded-full ml-6 h-24 w-24 border-b-2 border-gray-700 mb-3"></div>
+										<div className="text-2xl text-gray-700 pt-3">{"Fetching data..."}</div>
+									</div>
+									: wrapTweetsHTML(tweetResults)}
 					</div>
 				</section>
 
@@ -85,10 +107,10 @@ export default function queryPage() {
 						<div className="flex items-center justify-center w-full mb-12">
 							<label htmlFor="toggleB" className="flex items-center cursor-pointer">
 								<div className="relative my-2">
-								<input type="checkbox" id="toggleB" className="sr-only" checked={!debugMode}
-								onChange={() => {setDebugMode(!debugMode);}}/>
-								<div className="block bg-blue-200 w-14 h-8 rounded-full"></div>
-								<div className="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+									<input type="checkbox" id="toggleB" className="sr-only" checked={!debugMode}
+									onChange={() => {setDebugMode(!debugMode);}} />
+									<div className="block bg-blue-200 w-14 h-8 rounded-full"></div>
+									<div className="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
 								</div>
 								<div className="ml-3 text-gray-700 font-medium">
 								{"(DEV) Fetch external data"}
@@ -104,16 +126,15 @@ export default function queryPage() {
 }
 
 function wrapTweetsHTML(tweetsData) {
-	
-	const errorDivClasses = "col-span-4 row-start-1 row-end-4 ";
+	const errorDivClasses = "col-span-full mx-auto";
 	const errorTextClasses = "text-2xl font-bold my-52";
 
 	//ERRORS
-	if (tweetsData == undefined || tweetsData == "" || Object.entries(tweetsData).length == 0) {
-		return <div className={errorDivClasses}><p className={errorTextClasses}>{"No results"}</p></div>;
+	if (tweetsData === undefined || tweetsData === "" || Object.entries(tweetsData).length === 0) {
+		return (<div className={errorDivClasses}><p className={errorTextClasses}>{"No results"}</p></div>);
 	}
 	if (!tweetsData.hasOwnProperty("data") || !tweetsData["data"][0].hasOwnProperty("author_id")) { 
-		return <div className={errorDivClasses}><p className={errorTextClasses}>{"Error when retrieving data"}</p></div>;
+		return (<div className={errorDivClasses}><p className={errorTextClasses}>{"Error when retrieving data"}</p></div>);
 	}
 
 	const tweetsHTML = tweetsData["data"].map(tweet => {
@@ -121,7 +142,13 @@ function wrapTweetsHTML(tweetsData) {
 		const {username, name} = findTweetUserData(tweetsData, author_id);
 		return (
 			<Link href={`/searchTweets/${tweet["id"]}`} key={tweet.id}>
-				{smallTweet({username: username, name:name, text:tweet.text})}
+				{smallTweet({
+					username: username, name:name,
+					text:tweet.text, 
+					isRT: tweet.in_reply_to_user_id,
+					created_at: tweet.created_at,
+					public_metrics: tweet.public_metrics,
+					lang: tweet.lang})}
 			</Link>
 		);
 	});
@@ -130,11 +157,21 @@ function wrapTweetsHTML(tweetsData) {
 
 async function executeSearch(searched_text, updateErrors, updateLoading, updateResults, debugMode=false) {
 
-	if (searched_text == "") { 
+	console.log("executing search");
+	if (searched_text == "" && !debugMode) { 
 		updateErrors("Search bar is empty. Input a name or a phrase to search");
 		return;
+	} else if (searched_text.length < 3 && !debugMode) {
+		updateErrors("Search query has to have three letters at least.");
+		return;	
 	}
 
+
+	/*-----------------------------------------------------
+	ANY MORE SANITIZING OF USER INPUT?
+	-------------------------------------------------------
+	*/
+	searched_text = encodeURI(searched_text);
 	updateLoading(true);
 	updateErrors("");
 
@@ -147,13 +184,7 @@ async function executeSearch(searched_text, updateErrors, updateLoading, updateR
 	}
 	else {
 
-		/*-----------------------------------------------------
-		NEED TO ENCODEURI AND SANITIZE USER INPUT BASICALLY!!!!!!!!!!!!!!!!!!!!!!!!!1111111111
-		-------------------------------------------------------
-		*/
-		//SANITIZE SEARCHED_TEXT!!!!!!!!!!1111111111111111
-
-		const finalUrl = `/api/twitterquery?q=${searched_text}`;
+		const finalUrl = `/api/searchTweetsQuery?q=${searched_text}`;
 
 		const search_results = await fetch(finalUrl)
 			.then(res => res.json())
@@ -161,7 +192,6 @@ async function executeSearch(searched_text, updateErrors, updateLoading, updateR
 				if (!data.hasOwnProperty("data")) { 
 					//Incorrect data structure or error when retrieving
 					updateErrors("Received incorrect data");
-					updateResults({}); 
 					updateLoading(false); 
 					return;
 				} //Maybe add custom errors via checking the error key in the data
