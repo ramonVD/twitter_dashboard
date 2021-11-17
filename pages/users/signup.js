@@ -1,7 +1,7 @@
 import {useState} from "react"
 import Image from "next/image"
 
-/*Adapted from the default signin page from tailwindscss*/
+/*Adapted from the default signup page from tailwindscss*/
 export default function signInPage() {
     const [rememberMe, setRememberMe] = useState(false);
     const [pwd, setPwd] = useState("");
