@@ -4,10 +4,10 @@ import Link from "next/link"
 import {useState, useContext} from "react"
 import TweetContext from "../../components/global/tweetContext"
 import {findTweetUserData} from "../../lib/tweetDataHandling"
-import { smallTweet } from "../../components/tweets/displayedTweets"
+import { SmallTweet } from "../../components/tweets/displayedTweets"
 import Spinner from "../../components/shared/spinner"
 import Toggle from "../../components/shared/toggle"
-import widgetScript from "../../components/global/tweetWidgetScript"
+import WidgetScript from "../../components/global/tweetWidgetScript"
 
 /*TO-DO: 
 
@@ -19,7 +19,7 @@ MAKE IT ONLY SHOW UP IN DEV MODE, NEED TO CHECK DOCS
 
 const dummyTweets = require("../../data/tweets.json");
 
-export default function queryPage() {
+export default function QueryPage() {
 	/*Old values of seen tweets are saved in the context, decided to remove this from sessionStorage (it does
 		exactly the same thing as if we saved it in sessionStorage. If we move them to localStorage (why tho) 
 		remove these from context and hook em up to localStorage on useEffect)*/
@@ -35,7 +35,7 @@ export default function queryPage() {
 	return (
 
 		<div className="flex h-screen flex-col w-screen">
-        	{widgetScript()}
+        	{WidgetScript()}
 			{Navbar()}
 
 			<main className="flex flex-col flex-1 w-full h-full justify-start items-start">
@@ -90,7 +90,7 @@ function wrapTweetsHTML(tweetsData, errorMsg) {
 		const {username, name} = findTweetUserData(tweetsData, author_id);
 		return (
 			<Link href={`/searchTweets/${tweet["id"]}`} key={tweet.id}>
-				{smallTweet({
+				{SmallTweet({
 					username: username, name:name,
 					text:tweet.text, 
 					isRT: tweet.in_reply_to_user_id,

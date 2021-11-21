@@ -1,10 +1,10 @@
 import { useRouter } from 'next/router'
 import { useContext, useState, useEffect} from "react"
-import pageNotFoundMsg from '../../components/utils/pageNotFoundMsg'
+import PageNotFoundMsg from '../../components/utils/pageNotFoundMsg'
 import {getTweetData, findTweetUserData} from "../../lib/tweetDataHandling"
 import TweetContext from '../../components/global/tweetContext'
-import { tweetWidget } from '../../components/tweets/displayedTweets'
-import tweetInfoCard from '../../components/tweets/tweetInfoCard'
+import { TweetWidget } from '../../components/tweets/displayedTweets'
+import TweetInfoCard from '../../components/tweets/tweetInfoCard'
 import Navbar from '../../components/shared/navbar'
 import Link from "next/link"
 
@@ -21,24 +21,24 @@ export default function TweetDisplay() {
     //Id of the selected tweet
     const { id } = router.query;
 
-    //All saved tweets
-    const {tweetResults, setTweetResults} = useContext(TweetContext);
-
-    if (tweetResults == undefined) { 
-        return pageNotFoundMsg("Tweet not found", "↲ Search results","/searchTweets");
-    }
-
-    const tweetData = getTweetData(tweetResults, id);
-    if (Object.entries(tweetData).length == 0) {
-        return pageNotFoundMsg("Tweet not found", "↲ Search results" ,"/searchTweets");
-    }
-    const author_data = findTweetUserData(tweetResults, tweetData["author_id"]);
-    
+        
     const [showingTweetInfo, setShowingTweetInfo] = useState(false);
     const [embeddedTweet, setEmbeddedTweet] = useState(undefined);
+    
+        //All saved tweets
+    const {tweetResults, setTweetResults} = useContext(TweetContext);
+    const tweetData = getTweetData(tweetResults, id);
+    const author_data = findTweetUserData(tweetResults, tweetData["author_id"]);
 
     useEffect(() => {
-        getEmbeddedTweet(id, author_data["username"], setEmbeddedTweet);
+        if (tweetResults == undefined || author_data === undefined) { 
+            return PageNotFoundMsg("Tweet not found", "↲ Search results","/searchTweets");
+        }
+        else if (Object.entries(tweetData).length == 0) {
+            return PageNotFoundMsg("Tweet not found", "↲ Search results" ,"/searchTweets");
+        } else {
+            getEmbeddedTweet(id, author_data["username"], setEmbeddedTweet);
+        }
         return () => {
             cleanGarbageTags();
         }
@@ -57,9 +57,9 @@ export default function TweetDisplay() {
                         {!showingTweetInfo ? "Show more tweet info (WIP)" : "Hide Tweet info (WIP)"}
                         </button>
                         <div className={showCardClasses}>
-                        {tweetInfoCard()}
+                        {TweetInfoCard()}
                         </div>
-                        <Link href="/searchTweets">
+                        <Link href="/searchTweets" passHref>
                             <button className="h-14 my-2 mx-1 xl:text-base lg:text-sm text-xs bg-red-500 hover:bg-red-400 text-white font-bold py-1 px-3 border-b-3 border-red-700 hover:border-red-500 rounded">
                             {"↲ Back to search"}
                             </button>
@@ -67,7 +67,7 @@ export default function TweetDisplay() {
                     </div>
                 </div>
                 <div className="flex text-center self-center justify-center py-2"> 
-                    {tweetWidget(embeddedTweet, setEmbeddedTweet)}
+                    {TweetWidget(embeddedTweet, setEmbeddedTweet)}
                 </div>
             </div>
         </div>

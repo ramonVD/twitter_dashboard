@@ -2,7 +2,7 @@ import {useState} from "react"
 
 
 /*Adapted from the default login page from tailwindscss*/
-export default function loginPage() {
+export default function LoginPage() {
     const [username, setUsername] = useState("");
     const [pwd, setPwd] = useState("");
 

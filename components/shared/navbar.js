@@ -10,7 +10,7 @@ export default function Navbar(options={}) {
     return (
         <header className="flex justify-between w-full items-center bg-gray-100 border-b border-gray-200">
             <div className="flex justify-start items-center m-2 px-4">
-                    <Image className="p-3" src="/icons/header_icon.png" width={46} height={46} />
+                    <Image className="p-3" src="/icons/header_icon.png" width={46} height={46} alt="App logo"/>
                     <p className="pl-2 md:text-lg sm:text-base text-sm font-bold text-gray-700">Twitter thingyneitor</p>
                 </div>
             <div className="flex m-2 px-4 ">
