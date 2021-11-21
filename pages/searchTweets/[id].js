@@ -2,9 +2,10 @@ import { useRouter } from 'next/router'
 import { useContext, useState, useEffect} from "react"
 import pageNotFoundMsg from '../../components/utils/pageNotFoundMsg'
 import {getTweetData, findTweetUserData} from "../../lib/tweetDataHandling"
-import TweetContext from '../../components/shared/tweetContext'
-import { tweetWidget } from '../../components/shared/displayedTweets'
-import tweetInfoCard from '../../components/shared/tweetInfoCard'
+import TweetContext from '../../components/global/tweetContext'
+import { tweetWidget } from '../../components/tweets/displayedTweets'
+import tweetInfoCard from '../../components/tweets/tweetInfoCard'
+import Navbar from '../../components/shared/navbar'
 import Link from "next/link"
 
 /*Handles dynamic routing of found tweets, if the user clicks on a tweet
@@ -21,7 +22,7 @@ export default function TweetDisplay() {
     const { id } = router.query;
 
     //All saved tweets
-    const {tweetResults} = useContext(TweetContext);
+    const {tweetResults, setTweetResults} = useContext(TweetContext);
 
     if (tweetResults == undefined) { 
         return pageNotFoundMsg("Tweet not found", "↲ Search results","/searchTweets");
@@ -36,24 +37,6 @@ export default function TweetDisplay() {
     const [showingTweetInfo, setShowingTweetInfo] = useState(false);
     const [embeddedTweet, setEmbeddedTweet] = useState(undefined);
 
-    /*Next te problemes carregant scripts que necessiten recarregar-se per pagina.
-    Existeix alguna llibreria com npm-twitter-widgets(sic) que et fan la feina,
-    pero el problema és que criden a llocs externs i paranoia.
-    El problema amb usar scripts externs (com el cas dels k susen per poblar
-    els atributs de l'html del tweet, esk a react no li mola k toquin el DOM
-    sense que ell canvii d'estat.
-    Per aixo recarrego lscript i el crido cada cop k trobo les dades k vull carregar.
-    Basicament l'ordre seria: 
-    Crida a l'api perk et doni l'html del tweet. 
-    Escriu-lo a la pagina (evalua'l més bé, fotent al DOM lstring amb l'html via dangerouslySetInnerHTML)
-    Un cop el tens escrit al DOM, executa la comanda de lscript per poblar l'html.
-    La putada esk lscript, k normalment sexecutaria super rapid abans k shagues populat la pagina
-    i tot (o podries executar trankilament amb events desprs de window load),
-    per culpa de react no pots estar segur de quan posara al namespace la 
-    comanda k cal executar al window del client, pel k la vaig intentant cridar cada x temps
-    Aquestes dues ultimes coses es troben al tweetWidget a displayedTweets, 
-     */
-
     useEffect(() => {
         getEmbeddedTweet(id, author_data["username"], setEmbeddedTweet);
         return () => {
@@ -63,28 +46,31 @@ export default function TweetDisplay() {
 
     let showCardClasses = "transition-all";
     showCardClasses += (showingTweetInfo) ? " block" : " hidden"
-    //LScript esta tret de twitter a
-    //https://developer.twitter.com/en/docs/twitter-for-websites/javascript-api/guides/scripting-loading-and-initialization
     return (
-            <div className="grid md:grid-cols-4 place-content-stretch">
-                <div className="flex flex-initial justify-center items-stretch text-center py-2 md:col-span-2"> 
-                    {tweetWidget(embeddedTweet)}
-                </div>
-                <div className="flex-col md:sticky flex flex-grow-0 md:self-start md:top-32 mx-auto content-stretch md:col-span-2">
-                    <button className="h-14 my-2 mx-1 xl:text-base lg:text-sm text-xs bg-green-500 hover:bg-green-400 text-white font-bold py-1 px-3 border-b-3 border-green-700 hover:border-green-500 rounded"
-                        onClick={() => {setShowingTweetInfo(!showingTweetInfo);}}>
-                    {!showingTweetInfo ? "Show more tweet info (WIP)" : "Hide Tweet info (WIP)"}
-                    </button>
-                    <div className={showCardClasses}>
-                       {tweetInfoCard()}
-                    </div>
-                    <Link href="/searchTweets">
-                        <button className="h-14 my-2 mx-1 xl:text-base lg:text-sm text-xs bg-red-500 hover:bg-red-400 text-white font-bold py-1 px-3 border-b-3 border-red-700 hover:border-red-500 rounded">
-                        {"↲ Back to search"}
+        <div className="flex flex-col flex-1 w-full h-full">
+            {Navbar()}
+            <div className="flex md:flex-row flex-col items-center">
+                <div className="flex md:w-1/3 justify-center flex-col self-center md:self-start md:sticky md:top-44 lg:mx-12">
+                    <div className="flex flex-col flex-grow-0 px-5 py-3 mx-auto">
+                        <button className="h-14 my-2 mx-1 xl:text-base lg:text-sm text-xs bg-green-500 hover:bg-green-400 text-white font-bold py-1 px-3 border-b-3 border-green-700 hover:border-green-500 rounded"
+                            onClick={() => {setShowingTweetInfo(!showingTweetInfo);}}>
+                        {!showingTweetInfo ? "Show more tweet info (WIP)" : "Hide Tweet info (WIP)"}
                         </button>
-                    </Link>
+                        <div className={showCardClasses}>
+                        {tweetInfoCard()}
+                        </div>
+                        <Link href="/searchTweets">
+                            <button className="h-14 my-2 mx-1 xl:text-base lg:text-sm text-xs bg-red-500 hover:bg-red-400 text-white font-bold py-1 px-3 border-b-3 border-red-700 hover:border-red-500 rounded">
+                            {"↲ Back to search"}
+                            </button>
+                        </Link>
+                    </div>
+                </div>
+                <div className="flex text-center self-center justify-center py-2"> 
+                    {tweetWidget(embeddedTweet, setEmbeddedTweet)}
                 </div>
             </div>
+        </div>
     )
 }
 

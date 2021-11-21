@@ -5,7 +5,7 @@ import Image from 'next/image'
 with a fake logo (so far), and a "go back" footer for the rest
 of the pages that sends you to the homepage on clickin. 
 Can change classes but only of the external div */ 
-export default function footer(home=true, gobackName="↲ Go back", goBackLink="/", newClasses="") {
+export default function Footer(home=true, gobackName="↲ Go back", goBackLink="/", newClasses="") {
     if (home) { 
         return (
             <footer className={newClasses === "" ? "flex flex-row w-full h-16 items-center" : newClasses}>

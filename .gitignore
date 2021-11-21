@@ -1,7 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-#database data for migration, private for now
-/db
+#database prisma stuff for migration,
+#can do it manually using npx prisma migrate dev --name migration name
+/prisma/migrations
 
 # dependencies
 /node_modules

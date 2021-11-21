@@ -4,6 +4,7 @@ Needs the original tweet id and its author USERNAME (the name after the @). No a
 https://developer.twitter.com/en/docs/twitter-for-websites/oembed-api#Embedded
 */
 export default async function handler(req, res) {
+    console.log(process.env.DATABASE_URL)
 
     const { id, author } = req.query;
     if (id === "" || author === "") { res.status(400).json( {error: "Invalid id or author"}); }
@@ -23,7 +24,7 @@ export default async function handler(req, res) {
         })
         .catch((error) => {
             //NEEDS BETTER ERROR HANDLING
-            console.error('Embedded data error:', error);
+            console.error('Embedded tweet error - ', error);
             throw error;
         });
     } catch (err) {
