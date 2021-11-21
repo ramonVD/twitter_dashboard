@@ -17,7 +17,6 @@ export default NextAuth({
     database: process.env.DATABASE_URL,
     secret: process.env.SECRET,
     callbacks: {
-        async signIn({ user, account, profile, email, credentials }) { console.log(user); return true },
     },
     debug: true,
     });
