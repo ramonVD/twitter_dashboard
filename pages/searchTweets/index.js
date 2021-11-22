@@ -41,7 +41,7 @@ export default function QueryPage() {
 			<main className="flex flex-col flex-1 w-full h-full justify-start items-start">
 				<section className="flex w-full justify-center items-center max-h-5/6 pt-1">
 					<div id="tweetsGrid" className="md:px-2 px-1 min-w-full grid 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 grid-flow-row content-start place-items-stretch">
-						{isLoading ? Spinner("col-span-full p-2 my-52 mx-auto", 
+						{isLoading ? Spinner("col-span-full p-2 my-44 mx-auto", 
 											"animate-spin rounded-full ml-6 h-24 w-24 border-b-2 border-gray-700 mb-3",
 											"text-2xl text-gray-700 pt-3", "Fetching data...")
 									: wrapTweetsHTML(tweetResults, errorMsg)}
