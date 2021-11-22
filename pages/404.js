@@ -1,8 +1,8 @@
-import pageNotFoundMsg from "../components/utils/pageNotFoundMsg"
+import PageNotFoundMsg from "../components/utils/pageNotFoundMsg"
 
 
 export default function ErrorPage() {
 	return (
-		pageNotFoundMsg()
+		PageNotFoundMsg()
 	)
 }

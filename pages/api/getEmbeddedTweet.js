@@ -23,7 +23,7 @@ export default async function handler(req, res) {
         })
         .catch((error) => {
             //NEEDS BETTER ERROR HANDLING
-            console.error('Embedded data error:', error);
+            console.error('Embedded tweet error - ', error);
             throw error;
         });
     } catch (err) {

@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import {cleanTweetDate} from "../../lib/tweetDataHandling"
 import footer from "../shared/footer"
+import Spinner from "../shared/spinner"
 
 const containerClasses = "sm:p-3 p-2 m-1 border rounded border-blue-200 hover:bg-blue-100 cursor-pointer relative"; //Here to reference easily
 const tweetTitleClasses = "md:text-lg text-medium font-bold md:w-full";
 const tweetTextClasses = "lg:text-base sm:text-sm text-xs md:mx-auto max-w-full min-w-0 overflow-ellipsis break-words mb-8";
 
 /*Small tweet element, for when we're listing a lot of them*/
-export function smallTweet(tweetParams) {
+export function SmallTweet(tweetParams) {
     const dateObj = cleanTweetDate(tweetParams.created_at);
     return (
         <div className={containerClasses}>
@@ -24,42 +25,55 @@ export function smallTweet(tweetParams) {
     );
 }
 
-/*Sets the html frame for a tweet widget and executes the script
-to populate it correctly.*/
-export function tweetWidget(tweetData) {
-    /*Since react isnt gonna reliably tell us when the dom has loaded
-    correctly, this is an interval that auto stops when it succeeds
-    loading the script to populate the html.
-    It gets removed on unmount just in case*/
+
+
+
+
+/*Sets the html frame for a tweet widget and executes the script periodically to populate it correctly.*/
+export function TweetWidget(tweetData, setTweetData) {
+    /*Since react isnt gonna reliably tell us when the dom has loaded correctly, this is an interval that auto stops when it succeeds
+    loading the script to populate the html. It gets removed on unmount just in case.
+    Added a timeout on fail if the tweet or retweets/imgs it contains arent working (it should not happen on prod, since tweets are 
+    looked up at that moment but whatever, failsafe... */
+    const timeoutNoLoad = 3000;
+
     useEffect(() => {
-        var populateInterval = setInterval(function() {
+        let time_passed = 0;
+        var correctlyLoaded;
+        var populateInterval = setInterval(() => {
             if ( window.twttr !== undefined) {
-                if (window.twttr.widgets !== undefined) {
+                if (window.twttr.widgets !== undefined ) {
                     window.twttr.widgets.load();
                     clearInterval(populateInterval);
+                    /*This will only happen if tweet (or its rt/imgs have been deleted)
+                    it shows an error message since the tweet cannot be displayed*/
+                    correctlyLoaded = setTimeout(() => {
+                        if (document.querySelector(".twitter-tweet") === null) { 
+                            setTweetData(null);
+                        }
+                    }, timeoutNoLoad);
                 }
             }
         }, 50); 
         return () => {
             clearInterval(populateInterval);
+            clearInterval(correctlyLoaded);
         }
-    }
-    );
+    });
+
     if (tweetData === undefined) {
-        return (
-            <div>
-                <div className="animate-spin rounded-full h-24 w-24 border-b-2 border-blue-600 mt-52 mx-14"></div>
-                <div className="mb-52 mt-5 text-3xl text-blue-600">{"Loading tweet..."}</div>
-            </div>)
-    } else {
-  
+        return Spinner("","animate-spin rounded-full h-24 w-24 border-b-2 border-blue-600 mt-52 mx-14",
+                        "mb-52 mt-5 text-3xl text-blue-600", "Loading tweet...")
+    } else if (tweetData === null) {
+        return (<div className="mx-auto text-center mt-52">
+                    <h1 className="text-3xl font-bold mb-5">{"Whoops"}</h1>
+                    <h3 className="text-lg">{"Tweet contents have been removed"}</h3>
+                </div>)
+    }else {
         return (
             <div dangerouslySetInnerHTML={{__html: tweetData}} />);
     }
 }
-
-
-
 
 
 
@@ -70,13 +84,14 @@ UNUSED STYLES THAT WILL BE USED:
 al div amb el tweetdata.text
     <img className=tweet-img-wrap ... /> per una imatge dins el tweet
 */
-export function bigTweet(tweetParams) {
+export function BigTweet(tweetParams) {
     const dateObj = cleanTweetDate(tweetParams.created_at);
+    //Under tweet-header (convert to Image first)
+    //<img src={tweetParams.profile_img} alt="tweet img" className="avator" />
     return (
         <div>
         <div className="tweet-wrap">
             <div className="tweet-header">
-                <img src={tweetParams.profile_img} alt="tweet img" className="avator" />
                 <div className="tweet-header-info">
                 {tweetParams.author} <span>{`@${tweetParams.username}⠀`}</span>
                     <span className="text-blue-800">{`-⠀${dateObj.month} ${dateObj.monthDay}`}</span>

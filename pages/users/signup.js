@@ -2,7 +2,7 @@ import {useState} from "react"
 import Image from "next/image"
 
 /*Adapted from the default signup page from tailwindscss*/
-export default function signInPage() {
+export default function SignInPage() {
     const [rememberMe, setRememberMe] = useState(false);
     const [pwd, setPwd] = useState("");
     const [mail, setMail] = useState("");
@@ -19,7 +19,7 @@ return (
       <p className="mt-2 text-center text-sm text-gray-600">
         Or{' '}
         <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-          start your forever "free" trial
+          start your forever &quot;free&quot; trial
         </a>
       </p>
     </div>

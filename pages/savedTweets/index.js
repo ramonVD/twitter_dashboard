@@ -1,7 +1,7 @@
-import pageNotFoundMsg from "../../components/utils/pageNotFoundMsg"
+import PageNotFoundMsg from "../../components/utils/pageNotFoundMsg"
 
-export default function savedTweetsPage() {
+export default function SavedTweetsPage() {
 	return (
-		pageNotFoundMsg()
+		PageNotFoundMsg()
 	)
 }
