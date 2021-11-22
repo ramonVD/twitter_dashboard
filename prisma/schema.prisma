@@ -1,6 +1,7 @@
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 generator client {
@@ -10,6 +11,7 @@ generator client {
 model Account {
   id                 String  @id @default(cuid())
   userId             String
+  privileges         Int     @default(0)
   type               String
   provider           String
   providerAccountId  String
