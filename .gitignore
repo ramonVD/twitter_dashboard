@@ -4,6 +4,9 @@
 #can do it manually using npx prisma migrate dev --name migration name
 /prisma/migrations
 
+#unused library of components, apis.. that I'm saving for the future
+/unused
+
 # dependencies
 /node_modules
 /.pnp
